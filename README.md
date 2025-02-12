@@ -146,7 +146,98 @@ After clicking on Install without restart, go again to manage Jenkins and select
 ![image](https://github.com/user-attachments/assets/f3ec6078-de1f-4294-92b0-e1af9eecb25e)
 Click on save and hence we have successfully Integrated Java and Maven with Jenkins.
 
+# Step 4: Setup a Docker Host
+- Setup a Linux EC2 Instance
+- Install Docker
+- Start Docker Services
+- Run Basic Docker Commands
+Let's first launch an EC2 Instance. We will skip the steps here as we have already shown earlier how to create an EC2 Instance.
 
+Below is the screenshot of our newly created EC2 Instance on which we will install Docker:
+![image](https://github.com/user-attachments/assets/32e6fc81-8aef-4767-ae27-11c70c61b187)
+
+We will first install Docker on this EC2 Instance:
+![image](https://github.com/user-attachments/assets/66e3d7c8-4963-4a99-976a-f5e1a59ec0ee)
+
+After the successful installation of Docker, let’s verify the version of Docker:
+![image](https://github.com/user-attachments/assets/76b62205-930f-4cab-b509-8b28582e3383)
+
+Also, let’s enable and start the Docker Service:
+![image](https://github.com/user-attachments/assets/fef7b77c-8680-4dad-8ec1-28a10d9e301d)
+
+### Create Tomcat Docker Container
+In my previous blog, I deployed a Java code on a Tomcat VM, here in this blog we will deploy on a Tomcat Docker container.
+
+We will first pull the official Tomcat docker image from the Docker Hub and then run the container out of the same image.
+![image](https://github.com/user-attachments/assets/18e53f86-dc0a-41b8-abb5-0ea94d500943)
+
+Let’s now create a Container from the same Image with the command:
+docker run -d --name tomcat-container -p 8081:8080 tomcat
+
+![image](https://github.com/user-attachments/assets/28c79c47-2c08-4c6a-99ae-c1287f3e5d48)
+
+The above command runs a docker container in detached mode with the name tomcat-container and we are exposing port 8081 of our host machine with port 8080 of our container and it's using the latest image of tomcat.
+
+Let's verify the running container on our EC2 machine:
+![image](https://github.com/user-attachments/assets/77ed70e0-4af5-42f3-95ff-555d8d6f0f58)
+
+Before accessing our container from the browser we need to allow port 8081 in the Security Group of our EC2 docker-host machine.
+
+Go to the Security group of your EC2 machine and click on Edit inbound rules:
+![image](https://github.com/user-attachments/assets/5276d97d-de37-47e2-afba-30d724ee1d1f)
+
+Click on Add rule, select Custom TCP as type, and in port range put 8081–9000 in case we need it in the future, and under source select from anywhere and then click on Save rules to proceed:
+![image](https://github.com/user-attachments/assets/71a4bae8-0aec-4ce4-8e74-4b3e5d5121d7)
+
+Now let’s take the public IP of our Docker-host EC2 machine and with port 8081 access it from our browser:
+![image](https://github.com/user-attachments/assets/81a80e0d-0157-4804-b315-40d5feb5e5d2)
+
+From the above screenshot, you can see that although there is a 404 error, it also displays Apache Tomcat at the bottom which means the installation is successful however this is a known issue with the Tomcat docker image that we will fix in the next steps.
+
+The above issue occurs because whenever we try to access the Tomcat server from the browser it will look for the files in /webapps directory which is empty and the actual files are being stored in /webapps.dist.
+
+So in order to fix this issue we will copy all the content from webapps.dist to webapps directory and that will resolve the issue.
+
+Let's access our tomcat container and perform the steps as shown below:
+![image](https://github.com/user-attachments/assets/d7ee4fbd-3c83-46ef-973e-c3046dc1dad5)
+
+Once we are in the tomcat container go to the /webapps.dist directory and copy all the content to webapps directory:
+![image](https://github.com/user-attachments/assets/16a7f2ce-bc4f-4715-9873-a45e18ada426)
+
+After that we should be able to access our tomcat docker container:
+![image](https://github.com/user-attachments/assets/95f051e1-216b-4d56-94af-4d248d3f8dec)
+
+Somehow if we stop this container and start another container with the same Image on a different port we will face the same issue of 404 error. This happens because every time we launch a new container we are using a new Image as the previous container gets deleted.
+
+This issue can be solved by creating our own Docker Image with the appropriate changes required to run our container. This can be achieved by creating a Dockerfile on which we can mention the steps required to build the docker image and from that Image, we can run the container.
+
+### Create a Customized Dockerfile for Tomcat:
+
+To create the Dockerfile we will use the official Image of Tomcat and with it will mention the step to copy the contents from the directory /webapps.dist to /webapps:
+FROM  tomcat:latest
+RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
+
+![image](https://github.com/user-attachments/assets/d8d18b05-eb8e-4831-b3f2-2b68d5dd8a70)
+Now let's build the Docker Image using this Dockerfile using the below command:
+docker build -t tomcatserver .
+
+![image](https://github.com/user-attachments/assets/165728bf-feb0-4af7-8267-1238336a56dd)
+
+Let’s verify with the docker images command:
+![image](https://github.com/user-attachments/assets/db368d71-41cc-4886-928a-c3cbeeb9821d)
+
+Now is the time to run the docker container out of our customized docker image which we built using our dockerfile. The command is as:
+docker run -d --name tomcat-server -p 8085:8080 tomcatserver
+
+Here you should remember that we have already allowed port range 8081–9000 in the security group of our docker EC2 Instance.
+![image](https://github.com/user-attachments/assets/63d3795f-898b-4846-8960-afb9ad042f40)
+
+Let’s verify using the docker ps command:
+![image](https://github.com/user-attachments/assets/19415d5c-a0b5-4857-95a1-f285444a90a6)
+
+Also, let's try to access the Tomcat server on port 8085 from the browser:
+![image](https://github.com/user-attachments/assets/e00aba26-8219-4cc2-ad2f-6e477283a45f)
+Hence we should be now able to launch as many times the same container without facing any issues by utilizing our customizable Dockerfile.
 
 
 
