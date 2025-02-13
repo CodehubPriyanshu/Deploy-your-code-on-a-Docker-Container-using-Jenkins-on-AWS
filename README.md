@@ -1,5 +1,4 @@
-![image](https://github.com/user-attachments/assets/0c9a314c-5110-43b9-a11b-b0852a75f9ed)![image](https://github.com/user-attachments/assets/349d4b2f-ddc1-4e38-bb73-07bee3ecfdee)# Deploy-your-code-on-a-Docker-Container-using-Jenkins-on-AWS
-![68747470733a2f2f696d6775722e636f6d2f486b32386666452e706e67](https://github.com/user-attachments/assets/5aa86fa9-cc41-46bb-97c7-1caa9efdf71e)
+#  Deploy-your-code-on-a-Docker-Container-using-Jenkins-on-AWS
 In this blog, we are going to deploy a Java Web app on a Docker Container built on an EC2 Instance through the use of Jenkins.
 
 ### Agenda
@@ -238,7 +237,6 @@ Let’s verify using the docker ps command:
 Also, let's try to access the Tomcat server on port 8085 from the browser:
 ![image](https://github.com/user-attachments/assets/e00aba26-8219-4cc2-ad2f-6e477283a45f)
 Hence we should be now able to launch as many times the same container without facing any issues by utilizing our customizable Dockerfile.
-
 
 
 
