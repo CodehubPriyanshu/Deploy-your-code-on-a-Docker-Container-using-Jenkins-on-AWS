@@ -238,12 +238,16 @@ Also, let's try to access the Tomcat server on port 8085 from the browser:
 ![image](https://github.com/user-attachments/assets/e00aba26-8219-4cc2-ad2f-6e477283a45f)
 Hence we should be now able to launch as many times the same container without facing any issues by utilizing our customizable Dockerfile.
 
+# Step 5: Integrate Docker with Jenkins
+- Create a dockeradmin user
+- Install the “Publish Over SSH” plugin
+- Add Dockerhost to Jenkins “configure systems
 
+Let's first create a dockeradmin user and create a password for it as well.
+![image](https://github.com/user-attachments/assets/0c72df43-94c8-450c-a833-993bdb033d8e)
+Now let’s add this user to the Docker group with the below command:
 
-
-
-
-
+usermod -aG docker dockeradmin
 
 
 
