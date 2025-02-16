@@ -17,7 +17,6 @@ In this blog, we are going to deploy a Java Web app on a Docker Container built 
 - Familiarity with Docker and Git
 
 ### Step 1: Setup Jenkins Server on AWS EC2 Instance
-
 - Setup a Linux EC2 Instance
 - Install Java
 - Install Jenkins
@@ -25,7 +24,7 @@ In this blog, we are going to deploy a Java Web app on a Docker Container built 
 - Access Web UI on port 8080
 
 Log in to the Amazon management console, open EC2 Dashboard, click on the Launch Instance drop-down list, and click on Launch Instance as shown below:
-![image](https://github.com/user-attachments/assets/347aef4c-9c64-4eef-8852-07a81e244615)
+![image](https://github.com/user-attachments/assets/347aef4c-9c64-4eef-8852-07a81e244615).
 Once the Launch an instance window opens, provide the name of your EC2 Instance:
 ![image](https://github.com/user-attachments/assets/c51475c6-6f63-426a-9179-33f628c4dd22)
 Choose an Instance Type. Here you can select the type of machine, number of vCPUs, and memory that you want to have. Select t2.micro which is free-tier eligible.
@@ -84,7 +83,6 @@ Now we are ready to use our Jenkins Server.
 ![image](https://github.com/user-attachments/assets/7a3373e0-8aa9-40a3-9396-ab0f68afaf8a)
 
 ### Step 2: Integrate GitHub with Jenkins
-
 - Install Git on Jenkins Instance
 - Install Github Plugin on Jenkins GUI
 - Configure Git on Jenkins GUI
@@ -116,8 +114,8 @@ Under Git installations, provide the name Git, and under Path, we can either pro
 - Configure Maven and Java
 
 To install Maven on our Jenkins Server we will switch to the /opt directory and download the Maven package:
-
 ![image](https://github.com/user-attachments/assets/5228e747-36d0-4df0-8c18-5db8d5e7e6d1)
+
 Now we will extract the tar.gz file:
 ![image](https://github.com/user-attachments/assets/86499ffd-6c3e-4b3a-8423-a58d26ec9024)
 
@@ -138,7 +136,6 @@ Now we need to update the paths where Java and Maven have been installed in the 
 
 After clicking on Install without restart, go again to manage Jenkins and select Global Tool configuration to set the paths for Java and Maven.
 ### For JAVA:
-
 ![image](https://github.com/user-attachments/assets/fbbf96c3-137e-4bc3-b4ba-132e8a795e29)
 
 ### For MAVEN:
@@ -172,7 +169,6 @@ We will first pull the official Tomcat docker image from the Docker Hub and then
 
 Let’s now create a Container from the same Image with the command:
 docker run -d --name tomcat-container -p 8081:8080 tomcat
-
 ![image](https://github.com/user-attachments/assets/28c79c47-2c08-4c6a-99ae-c1287f3e5d48)
 
 The above command runs a docker container in detached mode with the name tomcat-container and we are exposing port 8081 of our host machine with port 8080 of our container and it's using the latest image of tomcat.
@@ -215,11 +211,10 @@ This issue can be solved by creating our own Docker Image with the appropriate c
 To create the Dockerfile we will use the official Image of Tomcat and with it will mention the step to copy the contents from the directory /webapps.dist to /webapps:
 FROM  tomcat:latest
 RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
-
 ![image](https://github.com/user-attachments/assets/d8d18b05-eb8e-4831-b3f2-2b68d5dd8a70)
+
 Now let's build the Docker Image using this Dockerfile using the below command:
 docker build -t tomcatserver .
-
 ![image](https://github.com/user-attachments/assets/165728bf-feb0-4af7-8267-1238336a56dd)
 
 Let’s verify with the docker images command:
