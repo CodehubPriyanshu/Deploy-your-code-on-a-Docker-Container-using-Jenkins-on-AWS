@@ -233,7 +233,7 @@ Also, let's try to access the Tomcat server on port 8085 from the browser:
 ![image](https://github.com/user-attachments/assets/e00aba26-8219-4cc2-ad2f-6e477283a45f)
 Hence we should be now able to launch as many times the same container without facing any issues by utilizing our customizable Dockerfile.
 
-# Step 5: Integrate Docker with Jenkins
+### Step 5: Integrate Docker with Jenkins
 - Create a dockeradmin user
 - Install the “Publish Over SSH” plugin
 - Add Dockerhost to Jenkins “configure systems
@@ -244,6 +244,34 @@ Now let’s add this user to the Docker group with the below command:
 
 usermod -aG docker dockeradmin
 
+Now in order to access the server using the newly created User we need to allow password-based authentication. For that, we need to do some changes in the /etc/ssh/sshd_config file.
+![image](https://github.com/user-attachments/assets/a5b62200-e68c-4d44-aa7c-96f4db8f8d58)
+
+As you can see above we need to uncomment PasswordAuthentication yes and comment out PasswordAuthentication no.
+
+Once we have updated the config file we need to restart the services with the command:
+service sshd reload
+Redirecting to /bin/systemctl reload sshd.service
+
+Now we would be able to log in using the dockeradmin user credentials:
+![image](https://github.com/user-attachments/assets/77e173b5-16da-49e6-808f-b8bf1d9c6117)
+
+Now next step is to integrate Docker with Jenkins, for that we need to install the “Publish Over SSH” plugin:
+
+Go to Manage Jenkins > Manage Plugins > Available plugins and search for publish over ssh plugin:
+![image](https://github.com/user-attachments/assets/a4cf713f-6af8-401a-b6bb-6ea40fb3322e)
+
+Click on Install without restart to install the plugin.
+
+Now we need to configure our dockerhost in Jenkins. For that go to Manage Jenkins > Configure System:
+![image](https://github.com/user-attachments/assets/324e0d70-bbf1-4019-a118-62c22a7fe4d5)
+
+On the next page after scrolling down you would be able to see Publish over SSH section where you need to add a new SSH server with the info as shown below:
+![image](https://github.com/user-attachments/assets/dc58f170-9cf7-4fd2-a7ec-f5056cf6a039)
+
+It should be noted that it's best practice to use ssh keys however for this demo we are using password-based authentication. In the above screenshot, we have provided details of our Docker host which we created on EC2 Instance. Also, note the use of private IP under Hostname as both our Jenkins Server and Dockerhost are on the same subnet. We can also use Public IP here.
+
+Click on Apply and Save to proceed. With this, our Docker integration with Jenkins is successfully accomplished.
 
 
 
