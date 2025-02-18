@@ -273,6 +273,25 @@ It should be noted that it's best practice to use ssh keys however for this demo
 
 Click on Apply and Save to proceed. With this, our Docker integration with Jenkins is successfully accomplished.
 
+### Step 6: Create Jenkins Job to Build and Copy Artifacts on to Docker Host
+In this section, we would create a new job in Jenkins however we would copy from the existing job
+![image](https://github.com/user-attachments/assets/49454ff6-7ced-49ef-a570-8cb4a301c9ad)
 
+Click on Ok to configure the job.
 
+On the configure settings you will notice that our new job has inherited all the settings from our previous build job. However, you can change the description and other settings:
+![image](https://github.com/user-attachments/assets/91a0a892-f4a8-4d3b-94e4-96f63378744f)
+
+Now one important change we need to do is to delete the previous job post-build step and select Send files or execute commands over SSH option.
+
+Under the SSH server, it will display the already created ssh server which we created in our earlier steps. Then we need to provide the path from where the WAR file will be copied and then deployed on the remote server for which we also need to provide a path under the Remote directory. Then finally Apply and Save to proceed.
+![image](https://github.com/user-attachments/assets/18c1d4d7-ee43-41a7-95b0-47bbf7be9c4e)
+
+Once we save the project the build will be triggered automatically due to Poll by SCM feature which we have enabled.
+
+Now if we check the console output of our job we should see the Job has been successfully finished.
+![image](https://github.com/user-attachments/assets/b0a16e30-b1e9-4784-b394-87d3fd72027e)
+
+We can also verify by checking the presence webapp.war file on our docker EC2 machine:
+![image](https://github.com/user-attachments/assets/29a12523-ecc3-46a2-b64a-b63ca1782490)
 
