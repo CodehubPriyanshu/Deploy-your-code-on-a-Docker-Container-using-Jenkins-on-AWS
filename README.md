@@ -295,3 +295,56 @@ Now if we check the console output of our job we should see the Job has been suc
 We can also verify by checking the presence webapp.war file on our docker EC2 machine:
 ![image](https://github.com/user-attachments/assets/29a12523-ecc3-46a2-b64a-b63ca1782490)
 
+### Step 7: Update Dockerfile to copy Artifacts to launch New Container
+In this step, we will create a Dockerfile to include the webapp.war file to launch a new container using our Java web Application. For that, we need to copy our artifacts to the location where we have our Dockerfile.
+
+We will create a separate directory named docker under the root user of our dockerhost inside /opt.
+![image](https://github.com/user-attachments/assets/f52105f0-548f-4146-afb9-f54931903ea2)
+
+As you can in the above screenshot that this new docker directory is owned by root and in Jenkins configuration settings we have mentioned that the artifacts are owned by the dockeradmin user. So let’s give the ownership of this directory to dockeradmin user.
+
+![image](https://github.com/user-attachments/assets/69955e6f-501c-40e4-af36-ccb5626b6f95)
+
+Now let's copy the Dockerfile which we created in earlier steps to this newly created docker directory and change its ownership to dockeradmin as well:
+
+mv Dockerfile /opt/docker/
+cd /opt/docker/
+chown -R dockeradmin:dockeradmin /opt/docker/
+
+ll
+total 4
+-rw-r--r-- 1 dockeradmin dockeradmin 89 May 10 12:08 Dockerfile
+
+Now we need to configure our Jenkins job to change the remote directory from /home/dockeradmin to //opt//docker:
+![image](https://github.com/user-attachments/assets/e00677f6-dacd-4435-b7bb-344ee30557cf)
+
+Click on Apply and Save to build the Job manually.
+
+If the build is successful we can see the webapp.war file in the /opt/docker directory of our dockerhost:
+![image](https://github.com/user-attachments/assets/90afa6a8-e938-4554-a2d0-1d28fce560ba)
+
+Now in our Dockerfile, we need to mention the location of this WAR file and copy this file onto the /usr/local/tomcat/webapps location in the container.
+
+Dockerfile:
+FROM  tomcat:latest
+RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
+COPY ./*.war /usr/local/tomcat/webapps
+
+Let’s now build a new image using this updated Dockerfile with the command:
+
+docker build -t tomcat:v1 .
+
+![image](https://github.com/user-attachments/assets/f1d924d5-333b-4ad6-b5a2-6ab1d88254e3)
+
+In the next step let’s now create a container out of this image with the command:
+
+docker run -d --name tomcatv1 -p 8086:8080 tomcat:v1
+
+#### Output:
+![image](https://github.com/user-attachments/assets/628b735c-71e0-4897-a68f-91f7fb481489)
+
+Now let’s access this application from our browser using URL http://54.173.227.226:8086/webapp/
+
+![image](https://github.com/user-attachments/assets/7d21cecd-525b-484b-82b2-0f883a5b8290)
+
+So far we have successfully copied the artifacts to our dockerhost and then manually used docker commands like docker build and docker run to deploy our application on the docker container.
