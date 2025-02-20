@@ -348,3 +348,27 @@ Now let’s access this application from our browser using URL http://54.173.227
 ![image](https://github.com/user-attachments/assets/7d21cecd-525b-484b-82b2-0f883a5b8290)
 
 So far we have successfully copied the artifacts to our dockerhost and then manually used docker commands like docker build and docker run to deploy our application on the docker container.
+
+### Step 8: Automate Build and Deployment on Docker Container
+In this step, we will try to automate end to end Jenkins pipeline right from when we commit our code to GitHub, it should build it, create an artifact and then copy the artifacts to the docker host, create a docker image, and finally create a docker container to deploy the project.
+
+For this automation to happen we need to go to our Jenkins job, select configure, and under Send files or execute commands over SSH there is Exec command field where we need to put some commands as shown below:
+cd /opt/docker;
+docker build -t regapp:v1 .;
+docker run -d --name registerapp -p 8087:8080 regapp:v1
+
+![image](https://github.com/user-attachments/assets/869b7bcb-9139-4ccc-939e-aeaecf01bc7c)
+Now let’s do some minor changes in our code and commit the changes which will trigger the Jenkins build process and we can see the results of automation.
+
+As soon as I made some changes in the Readme file in the GitHub repository the build got triggered in our Jenkins Job.
+
+If the build is successful we should see our new docker image and docker container as shown in the below screenshot:
+![image](https://github.com/user-attachments/assets/fd6e3ef4-5100-4ef2-b0e8-c06a3b3e075d)
+
+Also, we if access our new dockerized app from our browser on port 8087, the result should be something like this:
+![image](https://github.com/user-attachments/assets/645812f3-c7fe-4319-8f2a-f8714d715256)
+
+### Conclusion
+In this blog, we learned how to automate the build and deploy process using GitHub, Jenkins, Docker, and AWS EC2.
+
+Happy Learning!
